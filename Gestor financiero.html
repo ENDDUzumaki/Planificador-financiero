@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Planificador Financiero con Guardado Local</title>
+<style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f0f4f8;
+    margin: 0; padding: 20px;
+    color: #333;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: auto;
+    background: white;
+    padding: 30px;
+    border-radius: 12px;
+    box-shadow: 0 0 25px rgba(0,0,0,0.1);
+  }
+
+  h1 {
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  section {
+    margin-bottom: 30px;
+  }
+
+  h2 {
+    border-bottom: 2px solid #4f46e5;
+    padding-bottom: 8px;
+    margin-bottom: 15px;
+    color: #4f46e5;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+
+  input[type=number], input[type=text], input[type=date], select, textarea {
+    width: 100%;
+    padding: 8px 10px;
+    margin-bottom: 12px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 60px;
+  }
+
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .btn {
+    background: #4f46e5;
+    color: white;
+    padding: 12px 24px;
+    font-weight: 700;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  .btn:hover {
+    background: #4338ca;
+  }
+
+  /* Tabla sencilla para metas y créditos */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px 12px;
+    text-align: left;
+  }
+
+  th {
+    background-color: #4f46e5;
+    color: white;
+  }
+
+  /* Scroll horizontal para tablas en móviles */
+  .table-wrapper {
+    overflow-x: auto;
+  }
+
+  .disponible {
+    background: #fbbf24;
+    font-weight: 700;
+    font-size: 1.3rem;
+    padding: 12px;
+    border-radius: 10px;
+    margin-top: 15px;
+    text-align: center;
+    color: #92400e;
+  }
+
+  /* Gráfica contenedor */
+  .chart-container {
+    max-width: 600px;
+    margin: 30px auto 0;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>Planificador Financiero Mensual</h1>
+
+    <section>
+      <h2>Ingresos</h2>
+      <div class="grid-2">
+        <div>
+          <label for="ingresos-principales">Ingresos Principales</label>
+          <input type="number" id="ingresos-principales" placeholder="$" value="0" min="0" />
+        </div>
+        <div>
+          <label for="ingresos-extra">Ingresos Extra</label>
+          <input type="number" id="ingresos-extra" placeholder="$" value="0" min="0" />
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Gastos y Ahorro</h2>
+      <div class="grid-2">
+        <div>
+          <label for="gastos-fijos">Gastos Fijos (excluyendo renta)</label>
+          <input type="number" id="gastos-fijos" placeholder="$" value="0" min="0" />
+        </div>
+        <div>
+          <label for="valor-renta">Valor de Renta</label>
+          <input type="number" id="valor-renta" placeholder="$" value="0" min="0" />
+        </div>
+      </div>
+      <div class="grid-2">
+        <div>
+          <label for="ahorro">Ahorro</label>
+          <input type="number" id="ahorro" placeholder="$" value="0" min="0" />
+        </div>
+        <div>
+          <label for="inversiones">Inversiones</label>
+          <input type="number" id="inversiones" placeholder="$" value="0" min="0" />
+        </div>
+      </div>
+
+      <div class="disponible" id="disponible">Dinero Disponible: $0</div>
+    </section>
+
+    <section>
+      <h2>Créditos y Tarjetas</h2>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Saldo actual</th>
+              <th>Pago mínimo</th>
+              <th>Fecha de corte</th>
+              <th>Fecha de pago</th>
+              <th>Estado</th>
+              <th>Notas</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Ejemplo Tarjeta 1</td>
+              <td>$5,000</td>
+              <td>$500</td>
+              <td>15/08/2025</td>
+              <td>25/08/2025</td>
+              <td>Pendiente</td>
+              <td>Revisar gastos</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Metas Financieras</h2>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Meta</th>
+              <th>Monto objetivo</th>
+              <th>Tipo</th>
+              <th>Fecha objetivo</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Ahorrar para vacaciones</td>
+              <td>$10,000</td>
+              <td>Ahorro</td>
+              <td>31/12/2025</td>
+              <td>En progreso</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Recordatorios de Pagos</h2>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre del pago</th>
+              <th>Monto</th>
+              <th>Fecha límite</th>
+              <th>Frecuencia</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Renta departamento</td>
+              <td>$8,000</td>
+              <td>05/09/2025</td>
+              <td>Mensual</td>
+              <td>Pendiente</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="chart-container">
+      <canvas id="grafica"></canvas>
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    const ingresosPrincipales = document.getElementById('ingresos-principales');
+    const ingresosExtra = document.getElementById('ingresos-extra');
+    const gastosFijos = document.getElementById('gastos-fijos');
+    const valorRenta = document.getElementById('valor-renta');
+    const ahorro = document.getElementById('ahorro');
+    const inversiones = document.getElementById('inversiones');
+    const disponibleDiv = document.getElementById('disponible');
+    const ctx = document.getElementById('grafica').getContext('2d');
+
+    // Cargar datos guardados en localStorage
+    function cargarDatos() {
+      ingresosPrincipales.value = localStorage.getItem('ingresosPrincipales') || 0;
+      ingresosExtra.value = localStorage.getItem('ingresosExtra') || 0;
+      gastosFijos.value = localStorage.getItem('gastosFijos') || 0;
+      valorRenta.value = localStorage.getItem('valorRenta') || 0;
+      ahorro.value = localStorage.getItem('ahorro') || 0;
+      inversiones.value = localStorage.getItem('inversiones') || 0;
+    }
+
+    // Guardar datos en localStorage
+    function guardarDatos() {
+      localStorage.setItem('ingresosPrincipales', ingresosPrincipales.value);
+      localStorage.setItem('ingresosExtra', ingresosExtra.value);
+      localStorage.setItem('gastosFijos', gastosFijos.value);
+      localStorage.setItem('valorRenta', valorRenta.value);
+      localStorage.setItem('ahorro', ahorro.value);
+      localStorage.setItem('inversiones', inversiones.value);
+    }
+
+    let grafica = new Chart(ctx, {
+      type: 'pie',
+      data: {
+        labels: ['Gastos (excluyendo renta)', 'Renta', 'Ahorro', 'Inversiones', 'Dinero Disponible'],
+        datasets: [{
+          label: 'Distribución Mensual',
+          data: [0, 0, 0, 0, 0],
+          backgroundColor: [
+            '#ef4444', // rojo para gastos
+            '#f59e0b', // amarillo para renta
+            '#3b82f6', // azul para ahorro
+            '#10b981', // verde para inversiones
+            '#fbbf24'  // dorado para disponible
+          ]
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'bottom',
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return context.label + ': $' + context.parsed.toFixed(2);
+              }
+            }
+          }
+        }
+      }
+    });
+
+    function actualizarDatos() {
+      const ingresos = parseFloat(ingresosPrincipales.value) || 0;
+      const extra = parseFloat(ingresosExtra.value) || 0;
+      const gastos = parseFloat(gastosFijos.value) || 0;
+      const renta = parseFloat(valorRenta.value) || 0;
+      const ahorra = parseFloat(ahorro.value) || 0;
+      const inv = parseFloat(inversiones.value) || 0;
+
+      const totalIngresos = ingresos + extra;
+      const totalGastos = gastos + renta;
+      const disponible = totalIngresos - (totalGastos + ahorra + inv);
+
+      disponibleDiv.textContent = `Dinero Disponible: $${disponible.toFixed(2)}`;
+      disponibleDiv.style.color = disponible < 0 ? '#b91c1c' : '#92400e';
+
+      grafica.data.datasets[0].data = [gastos, renta, ahorra, inv, disponible > 0 ? disponible : 0];
+      grafica.update();
+
+      guardarDatos();
+    }
+
+    ingresosPrincipales.addEventListener('input', actualizarDatos);
+    ingresosExtra.addEventListener('input', actualizarDatos);
+    gastosFijos.addEventListener('input', actualizarDatos);
+    valorRenta.addEventListener('input', actualizarDatos);
+    ahorro.addEventListener('input', actualizarDatos);
+    inversiones.addEventListener('input', actualizarDatos);
+
+    // Al cargar la página, carga los datos guardados y actualiza
+    cargarDatos();
+    actualizarDatos();
+  </script>
+</body>
+</html>
